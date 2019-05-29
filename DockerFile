@@ -1,0 +1,20 @@
+FROM node:10
+
+USER node
+
+RUN mkdir /home/node/.npm-global
+ENV PATH=/home/node/.npm-global/bin:$PATH
+ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
+ENV VERDACCIO_PORT=4873 \
+ VERDACCIO_PROTOCOL=http
+ 
+RUN npm install verdaccio -g
+RUN npm install verdaccio-s3-storage -g
+
+ADD config.yaml /verdaccio/conf/config.yaml
+
+EXPOSE 4873
+
+VOLUME /verdaccio/storage
+
+CMD verdaccio --config /verdaccio/conf/config.yaml --listen $VERDACCIO_PROTOCOL://0.0.0.0:$VERDACCIO_PORT
